@@ -1,48 +1,39 @@
 const express = require("express");
 const cors = require("cors");
-const fs = require("fs");
 
 const app = express();
+
+// middlewares
 app.use(cors());
 app.use(express.json());
 
-const FILE = "./favorites.json";
-
-// garante que o arquivo existe
-if (!fs.existsSync(FILE)) {
-  fs.writeFileSync(FILE, JSON.stringify([]));
-}
-
-// GET favoritos
-app.get("/favorites", (req, res) => {
-  const data = JSON.parse(fs.readFileSync(FILE));
-  res.json(data);
+// rota teste
+app.get("/", (req, res) => {
+  res.send("Backend rodando 🚀");
 });
 
-// POST favorito
-app.post("/favorites", (req, res) => {
-  const favorites = JSON.parse(fs.readFileSync(FILE));
-  const song = req.body;
+// rota de criar conta
+app.post("/register", (req, res) => {
+  const { nome, email, senha } = req.body;
 
-  const exists = favorites.find(f => f.name === song.name);
-
-  if (!exists) {
-    favorites.push(song);
-    fs.writeFileSync(FILE, JSON.stringify(favorites, null, 2));
-  }
-
-  res.json({ success: true });
+  res.json({
+    message: "Usuário recebido com sucesso",
+    nome,
+    email
+  });
 });
 
-// DELETE favorito
-app.delete("/favorites/:name", (req, res) => {
-  let favorites = JSON.parse(fs.readFileSync(FILE));
-  favorites = favorites.filter(f => f.name !== req.params.name);
+// rota de login
+app.post("/login", (req, res) => {
+  const { email, senha } = req.body;
 
-  fs.writeFileSync(FILE, JSON.stringify(favorites, null, 2));
-  res.json({ success: true });
+  res.json({
+    message: "Login recebido com sucesso",
+    email
+  });
 });
 
+// iniciar servidor
 app.listen(3000, () => {
-  console.log("Backend rodando em http://localhost:3000");
+  console.log("Servidor rodando na porta 3000");
 });
