@@ -9,7 +9,7 @@ app.use(express.json());
 
 // rota teste
 app.get("/", (req, res) => {
-  res.send("Backend rodando 🚀");
+  res.send("Backend rodando ANACONDAAA");
 });
 
 // rota de criar conta
