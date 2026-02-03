@@ -92,6 +92,7 @@ router.post("/login", (req, res) => {
       id: usuario.id,
       nome: usuario.nome,
       email: usuario.email,
+      senha: usuario.senha,
       foto: usuario.foto
     }
   });
@@ -104,6 +105,7 @@ router.get("/users", (req, res) => {
     id: u.id,
     nome: u.nome,
     email: u.email,
+    senha: u.senha,
     foto: u.foto
   }));
   res.json(usuariosSemSenha);
