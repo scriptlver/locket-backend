@@ -62,7 +62,7 @@ router.post("/register", (req, res) => {
     nome,
     email,
     senha, // para produção, você pode hash depois
-    foto: foto || null // foto em Base64 ou null se não enviar
+    foto: foto || null
   };
 
   usuarios.push(novoUsuario);
