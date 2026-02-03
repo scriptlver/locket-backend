@@ -29,9 +29,9 @@ function salvarUsuarios(usuarios) {
   }
 }
 
-// REGISTER
+// ================= REGISTER =================
 router.post("/register", (req, res) => {
-  const { nome, email, senha } = req.body;
+  const { nome, email, senha, foto } = req.body;
 
   // validação básica
   if (!nome || !email || !senha) {
@@ -61,7 +61,8 @@ router.post("/register", (req, res) => {
     id: usuarios.length + 1,
     nome,
     email,
-    senha // se quiser, pode hash aqui depois
+    senha, // para produção, você pode hash depois
+    foto: foto || null // foto em Base64 ou null se não enviar
   };
 
   usuarios.push(novoUsuario);
@@ -70,7 +71,7 @@ router.post("/register", (req, res) => {
   res.status(201).json({ message: "Usuário criado com sucesso" });
 });
 
-// LOGIN
+// ================= LOGIN =================
 router.post("/login", (req, res) => {
   const { email, senha } = req.body;
 
@@ -90,19 +91,20 @@ router.post("/login", (req, res) => {
     usuario: {
       id: usuario.id,
       nome: usuario.nome,
-      email: usuario.email
+      email: usuario.email,
+      foto: usuario.foto
     }
   });
 });
 
-// LISTAR USUÁRIOS (apenas para teste)
+// ================= LISTAR USUÁRIOS =================
 router.get("/users", (req, res) => {
   const usuarios = lerUsuarios();
-  // não enviar senhas
   const usuariosSemSenha = usuarios.map(u => ({
     id: u.id,
     nome: u.nome,
-    email: u.email
+    email: u.email,
+    foto: u.foto
   }));
   res.json(usuariosSemSenha);
 });
