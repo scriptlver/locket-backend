@@ -61,7 +61,7 @@ router.post("/register", (req, res) => {
     id: usuarios.length + 1,
     nome,
     email,
-    senha, // para produção, você pode hash depois
+    senha, 
     foto: foto || null
   };
 
