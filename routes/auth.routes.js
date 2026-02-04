@@ -113,4 +113,37 @@ router.get("/users", (req, res) => {
 
 module.exports = router;
 
+// ================= EDITAR PERFIL =================
+router.put("/editar-perfil", (req, res) => {
+  const { id, nome, email, senha, foto } = req.body;
+
+  const usuarios = lerUsuarios();
+  const index = usuarios.findIndex(u => u.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  usuarios[index].nome = nome || usuarios[index].nome;
+  usuarios[index].email = email || usuarios[index].email;
+  usuarios[index].foto = foto || usuarios[index].foto;
+
+  if (senha && senha.length >= 6) {
+    usuarios[index].senha = senha;
+  }
+
+  salvarUsuarios(usuarios);
+
+  res.json({
+    message: "Perfil atualizado com sucesso",
+    usuario: {
+      id: usuarios[index].id,
+      nome: usuarios[index].nome,
+      email: usuarios[index].email,
+      foto: usuarios[index].foto
+    }
+  });
+});
+
+
 
