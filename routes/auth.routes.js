@@ -133,6 +133,7 @@ router.get("/users", (req, res) => {
 });
 
 // ================= EDITAR PERFIL =================
+// ================= EDITAR PERFIL =================
 router.put("/editar-perfil", (req, res) => {
   const { id, nome, email, senha, foto } = req.body;
 
@@ -145,11 +146,11 @@ router.put("/editar-perfil", (req, res) => {
 
   usuarios[index].nome = nome || usuarios[index].nome;
   usuarios[index].email = email || usuarios[index].email;
-  if (foto) {
-  const novaFoto = salvarFotoBase64(foto);
-  usuarios[index].foto = novaFoto;
-}
 
+  if (foto && foto.startsWith("data:image")) {
+    const novaFoto = salvarFotoBase64(foto);
+    usuarios[index].foto = novaFoto;
+  }
 
   if (senha && senha.length >= 6) {
     usuarios[index].senha = senha;
