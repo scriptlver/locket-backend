@@ -3,6 +3,24 @@ const path = require("path");
 const express = require("express");
 const router = express.Router();
 
+function salvarFotoBase64(fotoBase64) {
+  if (!fotoBase64) return null;
+
+  const matches = fotoBase64.match(/^data:image\/(\w+);base64,/);
+  const extensao = matches ? matches[1] : "png";
+
+  const base64Data = fotoBase64.replace(/^data:image\/\w+;base64,/, "");
+  const buffer = Buffer.from(base64Data, "base64");
+
+  const nomeArquivo = `user_${Date.now()}.${extensao}`;
+  const caminho = path.join(__dirname, "../uploads", nomeArquivo);
+
+  fs.writeFileSync(caminho, buffer);
+
+  return nomeArquivo; // isso vai pro JSON
+}
+
+
 const usuariosPath = path.join(__dirname, "../data/usuarios.json");
 
 // Função para ler usuários
@@ -32,6 +50,9 @@ function salvarUsuarios(usuarios) {
 // ================= REGISTER =================
 router.post("/register", (req, res) => {
   const { nome, email, senha, foto } = req.body;
+  const fotoSalva = salvarFotoBase64(foto);
+
+
 
   // validação básica
   if (!nome || !email || !senha) {
@@ -62,7 +83,7 @@ router.post("/register", (req, res) => {
     nome,
     email,
     senha, 
-    foto: foto || null
+    foto: fotoSalva
   };
 
   usuarios.push(novoUsuario);
@@ -111,8 +132,6 @@ router.get("/users", (req, res) => {
   res.json(usuariosSemSenha);
 });
 
-module.exports = router;
-
 // ================= EDITAR PERFIL =================
 router.put("/editar-perfil", (req, res) => {
   const { id, nome, email, senha, foto } = req.body;
@@ -126,7 +145,11 @@ router.put("/editar-perfil", (req, res) => {
 
   usuarios[index].nome = nome || usuarios[index].nome;
   usuarios[index].email = email || usuarios[index].email;
-  usuarios[index].foto = foto || usuarios[index].foto;
+  if (foto) {
+  const novaFoto = salvarFotoBase64(foto);
+  usuarios[index].foto = novaFoto;
+}
+
 
   if (senha && senha.length >= 6) {
     usuarios[index].senha = senha;
@@ -144,6 +167,9 @@ router.put("/editar-perfil", (req, res) => {
     }
   });
 });
+
+module.exports = router;
+
 
 
 
