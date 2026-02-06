@@ -24,7 +24,7 @@ app.get("/teste", (req, res) => {
   res.send("rota teste ok");
 });
 
-// iniciar servidor (SEMPRE POR ÚLTIMO)
+// iniciar servidor (sempre por último, e eu nn sabia hahahaha)
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

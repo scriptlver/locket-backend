@@ -1,5 +1,3 @@
-console.log("AUTH.ROUTES.JS FOI CARREGADO");
-
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
@@ -47,19 +45,17 @@ function salvarUsuarios(usuarios) {
   }
 }
 
-// ================= REGISTER =================
+// cadastrar usuarios
 router.post("/register", (req, res) => {
   const { nome, email, senha, foto } = req.body;
   const fotoSalva = salvarFotoBase64(foto);
 
-
-
-  // validação básica
+  // validar campos
   if (!nome || !email || !senha) {
     return res.status(400).json({ error: "Preencha todos os campos" });
   }
 
-  // email válido
+  // validar email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: "Digite um email válido" });
@@ -92,7 +88,7 @@ router.post("/register", (req, res) => {
   res.status(201).json({ message: "Usuário criado com sucesso" });
 });
 
-// ================= LOGIN =================
+// login
 router.post("/login", (req, res) => {
   const { email, senha } = req.body;
 
@@ -119,7 +115,7 @@ router.post("/login", (req, res) => {
   });
 });
 
-// ================= LISTAR USUÁRIOS =================
+// listar usuarios
 router.get("/users", (req, res) => {
   const usuarios = lerUsuarios();
   const usuariosSemSenha = usuarios.map(u => ({
@@ -132,7 +128,7 @@ router.get("/users", (req, res) => {
   res.json(usuariosSemSenha);
 });
 
-// ================= BUSCAR USUÁRIO POR ID =================
+// buscar usuário por id
 router.get("/users/:id", (req, res) => {
   const { id } = req.params;
 
@@ -154,7 +150,7 @@ router.get("/users/:id", (req, res) => {
 
 
 
-// ================= EDITAR PERFIL =================
+// editar perfil
 router.put("/editar-perfil", (req, res) => {
   const { id, nome, email, senha, foto } = req.body;
 
@@ -191,7 +187,7 @@ router.put("/editar-perfil", (req, res) => {
   });
 });
 
-// ================= BUSCAR USUÁRIO POR EMAIL =================
+// buscar usuario por email
 router.get("/users/email/:email", (req, res) => {
   const { email } = req.params;
 
@@ -209,12 +205,12 @@ router.get("/users/email/:email", (req, res) => {
     id: usuario.id,
     nome: usuario.nome,
     email: usuario.email,
-    senha: usuario.senha, // pode tirar depois se quiser
+    senha: usuario.senha, 
     foto: usuario.foto
   });
 });
 
-// ================= CONTAR USUÁRIOS =================
+// contar total de usuários
 router.get("/users-count", (req, res) => {
   const usuarios = lerUsuarios();
 
@@ -225,7 +221,7 @@ router.get("/users-count", (req, res) => {
 
 
 
-// ================= DELETAR USUÁRIO =================
+// deletar usuário
 router.delete("/users/:id", (req, res) => {
   const { id } = req.params;
 
@@ -244,7 +240,6 @@ router.delete("/users/:id", (req, res) => {
     usuario: usuarioRemovido[0]
   });
 });
-
 
 module.exports = router;
 
