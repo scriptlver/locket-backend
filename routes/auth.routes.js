@@ -191,6 +191,27 @@ router.put("/editar-perfil", (req, res) => {
   });
 });
 
+// ================= DELETAR USUÁRIO =================
+router.delete("/users/:id", (req, res) => {
+  const { id } = req.params;
+
+  const usuarios = lerUsuarios();
+  const index = usuarios.findIndex(u => u.id === Number(id));
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  const usuarioRemovido = usuarios.splice(index, 1);
+  salvarUsuarios(usuarios);
+
+  res.json({
+    message: "Usuário deletado com sucesso",
+    usuario: usuarioRemovido[0]
+  });
+});
+
+
 module.exports = router;
 
 

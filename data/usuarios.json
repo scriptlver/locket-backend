@@ -26,12 +26,5 @@
     "email": "hyunjinnnn@gmail.com",
     "senha": "123456",
     "foto": null
-  },
-  {
-    "id": 5,
-    "nome": "Teste",
-    "email": "teste@gmail.com",
-    "senha": "123456",
-    "foto": null
   }
 ]
