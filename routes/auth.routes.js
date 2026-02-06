@@ -191,6 +191,40 @@ router.put("/editar-perfil", (req, res) => {
   });
 });
 
+// ================= BUSCAR USUÁRIO POR EMAIL =================
+router.get("/users/email/:email", (req, res) => {
+  const { email } = req.params;
+
+  const usuarios = lerUsuarios();
+
+  const usuario = usuarios.find(
+    u => u.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (!usuario) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  res.json({
+    id: usuario.id,
+    nome: usuario.nome,
+    email: usuario.email,
+    senha: usuario.senha, // pode tirar depois se quiser
+    foto: usuario.foto
+  });
+});
+
+// ================= CONTAR USUÁRIOS =================
+router.get("/users-count", (req, res) => {
+  const usuarios = lerUsuarios();
+
+  res.json({
+    totalUsuarios: usuarios.length
+  });
+});
+
+
+
 // ================= DELETAR USUÁRIO =================
 router.delete("/users/:id", (req, res) => {
   const { id } = req.params;
