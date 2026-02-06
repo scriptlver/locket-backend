@@ -19,7 +19,7 @@ function salvarFotoBase64(fotoBase64) {
 
   fs.writeFileSync(caminho, buffer);
 
-  return nomeArquivo; // isso vai pro JSON
+  return nomeArquivo; 
 }
 
 
@@ -29,7 +29,6 @@ const usuariosPath = path.join(__dirname, "../data/usuarios.json");
 function lerUsuarios() {
   try {
     if (!fs.existsSync(usuariosPath)) {
-      // Cria o arquivo se não existir
       fs.writeFileSync(usuariosPath, "[]", "utf-8");
     }
     const data = fs.readFileSync(usuariosPath, "utf-8");
@@ -40,7 +39,6 @@ function lerUsuarios() {
   }
 }
 
-// Função para salvar usuários
 function salvarUsuarios(usuarios) {
   try {
     fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
@@ -139,7 +137,6 @@ router.get("/users/:id", (req, res) => {
   const { id } = req.params;
 
   const usuarios = lerUsuarios();
-
   const usuario = usuarios.find(u => u.id === Number(id));
 
   if (!usuario) {
@@ -150,9 +147,11 @@ router.get("/users/:id", (req, res) => {
     id: usuario.id,
     nome: usuario.nome,
     email: usuario.email,
+    senha: usuario.senha,
     foto: usuario.foto
   });
 });
+
 
 
 // ================= EDITAR PERFIL =================
@@ -186,6 +185,7 @@ router.put("/editar-perfil", (req, res) => {
       id: usuarios[index].id,
       nome: usuarios[index].nome,
       email: usuarios[index].email,
+      senha: usuarios[index].senha,
       foto: usuarios[index].foto
     }
   });
