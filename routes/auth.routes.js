@@ -1,3 +1,5 @@
+console.log("AUTH.ROUTES.JS FOI CARREGADO");
+
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
@@ -23,7 +25,7 @@ function salvarFotoBase64(fotoBase64) {
 
 const usuariosPath = path.join(__dirname, "../data/usuarios.json");
 
-// Função para ler usuários
+// função para ler usuários
 function lerUsuarios() {
   try {
     if (!fs.existsSync(usuariosPath)) {
@@ -132,7 +134,27 @@ router.get("/users", (req, res) => {
   res.json(usuariosSemSenha);
 });
 
-// ================= EDITAR PERFIL =================
+// ================= BUSCAR USUÁRIO POR ID =================
+router.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+
+  const usuarios = lerUsuarios();
+
+  const usuario = usuarios.find(u => u.id === Number(id));
+
+  if (!usuario) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  res.json({
+    id: usuario.id,
+    nome: usuario.nome,
+    email: usuario.email,
+    foto: usuario.foto
+  });
+});
+
+
 // ================= EDITAR PERFIL =================
 router.put("/editar-perfil", (req, res) => {
   const { id, nome, email, senha, foto } = req.body;

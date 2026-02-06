@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-
 const app = express();
 const PORT = 3000;
 
@@ -12,17 +11,20 @@ app.use(express.json());
 
 // rotas
 const authRoutes = require("./routes/auth.routes");
-app.use(authRoutes);
+app.use("/api", authRoutes);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 
 // rota teste
 app.get("/", (req, res) => {
   res.send("Backend rodando 🚀");
 });
 
-// iniciar servidor
+app.get("/teste", (req, res) => {
+  res.send("rota teste ok");
+});
+
+// iniciar servidor (SEMPRE POR ÚLTIMO)
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
