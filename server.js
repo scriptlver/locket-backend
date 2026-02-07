@@ -13,7 +13,8 @@ app.use(express.json());
 const authRoutes = require("./routes/auth.routes");
 app.use("/api", authRoutes);
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static("uploads"));
+
 
 // rota teste
 app.get("/", (req, res) => {
