@@ -1,8 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
+
 const router = express.Router();
 
+const usuariosPath = path.join(__dirname, "../data/usuarios.json");
+const uploadsPath = path.join(__dirname, "../uploads");
+
+/* ================= SALVAR FOTO BASE64 ================= */
 function salvarFotoBase64(fotoBase64) {
   if (!fotoBase64) return null;
 
@@ -13,22 +18,20 @@ function salvarFotoBase64(fotoBase64) {
   const buffer = Buffer.from(base64Data, "base64");
 
   const nomeArquivo = `user_${Date.now()}.${extensao}`;
-  const caminho = path.join(__dirname, "../uploads", nomeArquivo);
+  const caminho = path.join(uploadsPath, nomeArquivo);
 
   fs.writeFileSync(caminho, buffer);
 
-  return nomeArquivo; 
+  return nomeArquivo;
 }
 
-
-const usuariosPath = path.join(__dirname, "../data/usuarios.json");
-
-// função para ler usuários
+/* ================= LER USUÁRIOS ================= */
 function lerUsuarios() {
   try {
     if (!fs.existsSync(usuariosPath)) {
       fs.writeFileSync(usuariosPath, "[]", "utf-8");
     }
+
     const data = fs.readFileSync(usuariosPath, "utf-8");
     return JSON.parse(data);
   } catch (err) {
@@ -37,6 +40,7 @@ function lerUsuarios() {
   }
 }
 
+/* ================= SALVAR USUÁRIOS ================= */
 function salvarUsuarios(usuarios) {
   try {
     fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
@@ -45,41 +49,46 @@ function salvarUsuarios(usuarios) {
   }
 }
 
-// cadastrar usuarios
+/* ========================================================= */
+/* ================= REGISTRO ================= */
+/* ========================================================= */
 router.post("/register", (req, res) => {
-  const { nome, email, senha, foto } = req.body;
-  const fotoSalva = salvarFotoBase64(foto);
+  const { nomeUsuario, nome, email, senha, foto } = req.body;
 
-  // validar campos
-  if (!nome || !email || !senha) {
+  if (!nomeUsuario || !nome || !email || !senha) {
     return res.status(400).json({ error: "Preencha todos os campos" });
   }
 
-  // validar email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: "Digite um email válido" });
   }
 
-  // senha mínima
   if (senha.length < 6) {
-    return res.status(400).json({ error: "A senha deve ter no mínimo 6 caracteres" });
+    return res
+      .status(400)
+      .json({ error: "A senha deve ter no mínimo 6 caracteres" });
   }
 
   const usuarios = lerUsuarios();
 
-  // verifica se email já existe
-  if (usuarios.find(u => u.email === email)) {
+  if (usuarios.find((u) => u.email === email)) {
     return res.status(400).json({ error: "Email já cadastrado" });
   }
 
-  // cria novo usuário
+  if (usuarios.find((u) => u.nomeUsuario === nomeUsuario)) {
+    return res.status(400).json({ error: "Nome de usuário já existe" });
+  }
+
+  const fotoSalva = salvarFotoBase64(foto);
+
   const novoUsuario = {
     id: usuarios.length + 1,
+    nomeUsuario,
     nome,
     email,
-    senha, 
-    foto: fotoSalva
+    senha,
+    foto: fotoSalva,
   };
 
   usuarios.push(novoUsuario);
@@ -88,7 +97,9 @@ router.post("/register", (req, res) => {
   res.status(201).json({ message: "Usuário criado com sucesso" });
 });
 
-// login
+/* ========================================================= */
+/* ================= LOGIN ================= */
+/* ========================================================= */
 router.post("/login", (req, res) => {
   const { email, senha } = req.body;
 
@@ -97,7 +108,10 @@ router.post("/login", (req, res) => {
   }
 
   const usuarios = lerUsuarios();
-  const usuario = usuarios.find(u => u.email === email && u.senha === senha);
+
+  const usuario = usuarios.find(
+    (u) => u.email === email && u.senha === senha
+  );
 
   if (!usuario) {
     return res.status(401).json({ error: "Email ou senha inválidos" });
@@ -107,126 +121,122 @@ router.post("/login", (req, res) => {
     message: "Login realizado com sucesso",
     usuario: {
       id: usuario.id,
+      nomeUsuario: usuario.nomeUsuario,
       nome: usuario.nome,
       email: usuario.email,
       senha: usuario.senha,
-      foto: usuario.foto
-    }
+      foto: usuario.foto,
+    },
   });
 });
 
-// listar usuarios
+/* ========================================================= */
+/* ================= LISTAR USUÁRIOS ================= */
+/* ========================================================= */
 router.get("/users", (req, res) => {
   const usuarios = lerUsuarios();
-  const usuariosSemSenha = usuarios.map(u => ({
-    id: u.id,
-    nome: u.nome,
-    email: u.email,
-    senha: u.senha,
-    foto: u.foto
-  }));
-  res.json(usuariosSemSenha);
+
+  res.json(usuarios);
 });
 
-// buscar usuário por id
+/* ========================================================= */
+/* ================= BUSCAR USUÁRIO POR ID ================= */
+/* ========================================================= */
 router.get("/users/:id", (req, res) => {
   const { id } = req.params;
 
   const usuarios = lerUsuarios();
-  const usuario = usuarios.find(u => u.id === Number(id));
+  const usuario = usuarios.find((u) => u.id === Number(id));
 
   if (!usuario) {
     return res.status(404).json({ error: "Usuário não encontrado" });
   }
 
-  res.json({
-    id: usuario.id,
-    nome: usuario.nome,
-    email: usuario.email,
-    senha: usuario.senha,
-    foto: usuario.foto
-  });
+  res.json(usuario);
 });
 
-
-
-// editar perfil
-router.put("/editar-perfil", (req, res) => {
-  const { id, nome, email, senha, foto } = req.body;
-
-  const usuarios = lerUsuarios();
-  const index = usuarios.findIndex(u => u.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ error: "Usuário não encontrado" });
-  }
-
-  usuarios[index].nome = nome || usuarios[index].nome;
-  usuarios[index].email = email || usuarios[index].email;
-
-  if (foto && foto.startsWith("data:image")) {
-    const novaFoto = salvarFotoBase64(foto);
-    usuarios[index].foto = novaFoto;
-  }
-
-  if (senha && senha.length >= 6) {
-    usuarios[index].senha = senha;
-  }
-
-  salvarUsuarios(usuarios);
-
-  res.json({
-    message: "Perfil atualizado com sucesso",
-    usuario: {
-      id: usuarios[index].id,
-      nome: usuarios[index].nome,
-      email: usuarios[index].email,
-      senha: usuarios[index].senha,
-      foto: usuarios[index].foto
-    }
-  });
-});
-
-// buscar usuario por email
+/* ========================================================= */
+/* ================= BUSCAR POR EMAIL ================= */
+/* ========================================================= */
 router.get("/users/email/:email", (req, res) => {
   const { email } = req.params;
 
   const usuarios = lerUsuarios();
 
   const usuario = usuarios.find(
-    u => u.email.toLowerCase() === email.toLowerCase()
+    (u) => u.email.toLowerCase() === email.toLowerCase()
   );
 
   if (!usuario) {
     return res.status(404).json({ error: "Usuário não encontrado" });
   }
 
-  res.json({
-    id: usuario.id,
-    nome: usuario.nome,
-    email: usuario.email,
-    senha: usuario.senha, 
-    foto: usuario.foto
-  });
+  res.json(usuario);
 });
 
-// contar total de usuários
+/* ========================================================= */
+/* ================= CONTAR USUÁRIOS ================= */
+/* ========================================================= */
 router.get("/users-count", (req, res) => {
   const usuarios = lerUsuarios();
 
   res.json({
-    totalUsuarios: usuarios.length
+    totalUsuarios: usuarios.length,
   });
 });
 
+/* ========================================================= */
+/* ================= EDITAR PERFIL ================= */
+/* ========================================================= */
+router.put("/editar-perfil", (req, res) => {
+  const { id, nomeUsuario, nome, email, senha, foto } = req.body;
 
+  const usuarios = lerUsuarios();
+  const index = usuarios.findIndex((u) => u.id === id);
 
-// deletar usuário
+  if (index === -1) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  if (nomeUsuario) {
+    const existe = usuarios.find(
+      (u) => u.nomeUsuario === nomeUsuario && u.id !== id
+    );
+
+    if (existe) {
+      return res.status(400).json({ error: "Nome de usuário já existe" });
+    }
+
+    usuarios[index].nomeUsuario = nomeUsuario;
+  }
+
+  if (nome) usuarios[index].nome = nome;
+  if (email) usuarios[index].email = email;
+
+  if (senha && senha.length >= 6) {
+    usuarios[index].senha = senha;
+  }
+
+  if (foto && foto.startsWith("data:image")) {
+    usuarios[index].foto = salvarFotoBase64(foto);
+  }
+
+  salvarUsuarios(usuarios);
+
+  res.json({
+    message: "Perfil atualizado com sucesso",
+    usuario: usuarios[index],
+  });
+});
+
+/* ========================================================= */
+/* ================= DELETAR USUÁRIO ================= */
+/* ========================================================= */
 router.delete("/users/:id", (req, res) => {
   const { id } = req.params;
 
   const usuarios = lerUsuarios();
-  const index = usuarios.findIndex(u => u.id === Number(id));
+  const index = usuarios.findIndex((u) => u.id === Number(id));
 
   if (index === -1) {
     return res.status(404).json({ error: "Usuário não encontrado" });
@@ -237,12 +247,8 @@ router.delete("/users/:id", (req, res) => {
 
   res.json({
     message: "Usuário deletado com sucesso",
-    usuario: usuarioRemovido[0]
+    usuario: usuarioRemovido[0],
   });
 });
 
 module.exports = router;
-
-
-
-
