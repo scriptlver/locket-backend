@@ -7,7 +7,18 @@ const router = express.Router();
 const usuariosPath = path.join(__dirname, "../data/usuarios.json");
 const uploadsPath = path.join(__dirname, "../uploads");
 
-/* ================= SALVAR FOTO BASE64 ================= */
+/* ========================================================= */
+/* ================= CRIAR PASTAS SE NÃO EXISTIREM ========= */
+/* ========================================================= */
+
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
+
+/* ========================================================= */
+/* ================= SALVAR FOTO BASE64 ==================== */
+/* ========================================================= */
+
 function salvarFotoBase64(fotoBase64) {
   if (!fotoBase64) return null;
 
@@ -25,35 +36,37 @@ function salvarFotoBase64(fotoBase64) {
   return nomeArquivo;
 }
 
-/* ================= LER USUÁRIOS ================= */
+/* ========================================================= */
+/* ================= LER USUÁRIOS ========================== */
+/* ========================================================= */
+
 function lerUsuarios() {
   try {
     if (!fs.existsSync(usuariosPath)) {
       fs.writeFileSync(usuariosPath, "[]", "utf-8");
     }
 
-    const data = fs.readFileSync(usuariosPath, "utf-8");
-    return JSON.parse(data);
+    return JSON.parse(fs.readFileSync(usuariosPath, "utf-8"));
   } catch (err) {
     console.error("Erro ao ler usuários:", err);
     return [];
   }
 }
 
-/* ================= SALVAR USUÁRIOS ================= */
+/* ========================================================= */
+/* ================= SALVAR USUÁRIOS ======================= */
+/* ========================================================= */
+
 function salvarUsuarios(usuarios) {
-  try {
-    fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
-  } catch (err) {
-    console.error("Erro ao salvar usuários:", err);
-  }
+  fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
 }
 
 /* ========================================================= */
-/* ================= REGISTRO ================= */
+/* ================= REGISTRO ============================== */
 /* ========================================================= */
+
 router.post("/register", (req, res) => {
-  const { nomeUsuario, nome, email, senha, foto } = req.body;
+  const { nomeUsuario, nome, email, senha, foto, bio } = req.body;
 
   if (!nomeUsuario || !nome || !email || !senha) {
     return res.status(400).json({ error: "Preencha todos os campos" });
@@ -65,9 +78,9 @@ router.post("/register", (req, res) => {
   }
 
   if (senha.length < 6) {
-    return res
-      .status(400)
-      .json({ error: "A senha deve ter no mínimo 6 caracteres" });
+    return res.status(400).json({
+      error: "A senha deve ter no mínimo 6 caracteres",
+    });
   }
 
   const usuarios = lerUsuarios();
@@ -89,6 +102,7 @@ router.post("/register", (req, res) => {
     email,
     senha,
     foto: fotoSalva,
+    bio: bio || ""
   };
 
   usuarios.push(novoUsuario);
@@ -98,8 +112,9 @@ router.post("/register", (req, res) => {
 });
 
 /* ========================================================= */
-/* ================= LOGIN ================= */
+/* ================= LOGIN ================================ */
 /* ========================================================= */
+
 router.post("/login", (req, res) => {
   const { email, senha } = req.body;
 
@@ -126,27 +141,26 @@ router.post("/login", (req, res) => {
       email: usuario.email,
       senha: usuario.senha,
       foto: usuario.foto,
+      bio: usuario.bio || ""
     },
   });
 });
 
 /* ========================================================= */
-/* ================= LISTAR USUÁRIOS ================= */
+/* ================= LISTAR USUÁRIOS ====================== */
 /* ========================================================= */
+
 router.get("/users", (req, res) => {
-  const usuarios = lerUsuarios();
-
-  res.json(usuarios);
+  res.json(lerUsuarios());
 });
 
 /* ========================================================= */
-/* ================= BUSCAR USUÁRIO POR ID ================= */
+/* ================= BUSCAR POR ID ======================== */
 /* ========================================================= */
+
 router.get("/users/:id", (req, res) => {
-  const { id } = req.params;
-
   const usuarios = lerUsuarios();
-  const usuario = usuarios.find((u) => u.id === Number(id));
+  const usuario = usuarios.find((u) => u.id === Number(req.params.id));
 
   if (!usuario) {
     return res.status(404).json({ error: "Usuário não encontrado" });
@@ -156,40 +170,11 @@ router.get("/users/:id", (req, res) => {
 });
 
 /* ========================================================= */
-/* ================= BUSCAR POR EMAIL ================= */
+/* ================= EDITAR PERFIL ======================== */
 /* ========================================================= */
-router.get("/users/email/:email", (req, res) => {
-  const { email } = req.params;
 
-  const usuarios = lerUsuarios();
-
-  const usuario = usuarios.find(
-    (u) => u.email.toLowerCase() === email.toLowerCase()
-  );
-
-  if (!usuario) {
-    return res.status(404).json({ error: "Usuário não encontrado" });
-  }
-
-  res.json(usuario);
-});
-
-/* ========================================================= */
-/* ================= CONTAR USUÁRIOS ================= */
-/* ========================================================= */
-router.get("/users-count", (req, res) => {
-  const usuarios = lerUsuarios();
-
-  res.json({
-    totalUsuarios: usuarios.length,
-  });
-});
-
-/* ========================================================= */
-/* ================= EDITAR PERFIL ================= */
-/* ========================================================= */
 router.put("/editar-perfil", (req, res) => {
-  const { id, nomeUsuario, nome, email, senha, foto } = req.body;
+  const { id, nomeUsuario, nome, email, senha, foto, bio } = req.body;
 
   const usuarios = lerUsuarios();
   const index = usuarios.findIndex((u) => u.id === id);
@@ -217,6 +202,10 @@ router.put("/editar-perfil", (req, res) => {
     usuarios[index].senha = senha;
   }
 
+  if (bio !== undefined) {
+    usuarios[index].bio = bio;
+  }
+
   if (foto && foto.startsWith("data:image")) {
     usuarios[index].foto = salvarFotoBase64(foto);
   }
@@ -230,13 +219,14 @@ router.put("/editar-perfil", (req, res) => {
 });
 
 /* ========================================================= */
-/* ================= DELETAR USUÁRIO ================= */
+/* ================= DELETAR USUÁRIO ====================== */
 /* ========================================================= */
-router.delete("/users/:id", (req, res) => {
-  const { id } = req.params;
 
+router.delete("/users/:id", (req, res) => {
   const usuarios = lerUsuarios();
-  const index = usuarios.findIndex((u) => u.id === Number(id));
+  const index = usuarios.findIndex(
+    (u) => u.id === Number(req.params.id)
+  );
 
   if (index === -1) {
     return res.status(404).json({ error: "Usuário não encontrado" });
