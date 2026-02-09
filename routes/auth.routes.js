@@ -232,13 +232,24 @@ router.delete("/users/:id", (req, res) => {
     return res.status(404).json({ error: "Usuário não encontrado" });
   }
 
-  const usuarioRemovido = usuarios.splice(index, 1);
+  const usuario = usuarios[index];
+
+  /* 🔥 APAGAR FOTO */
+  if (usuario.foto) {
+    const caminhoFoto = path.join(uploadsPath, usuario.foto);
+
+    if (fs.existsSync(caminhoFoto)) {
+      fs.unlinkSync(caminhoFoto);
+    }
+  }
+
+  usuarios.splice(index, 1);
   salvarUsuarios(usuarios);
 
   res.json({
-    message: "Usuário deletado com sucesso",
-    usuario: usuarioRemovido[0],
+    message: "Usuário deletado com sucesso"
   });
 });
+
 
 module.exports = router;
