@@ -66,7 +66,7 @@ function salvarUsuarios(usuarios) {
 /* ========================================================= */
 
 router.post("/register", (req, res) => {
-  const { nomeUsuario, nome, email, senha, foto, bio } = req.body;
+  const { nomeUsuario, nome, email, senha, foto, bio, favoritos } = req.body;
 
   if (!nomeUsuario || !nome || !email || !senha) {
     return res.status(400).json({ error: "Preencha todos os campos" });
@@ -95,21 +95,57 @@ router.post("/register", (req, res) => {
 
   const fotoSalva = salvarFotoBase64(foto);
 
-  const novoUsuario = {
-    id: usuarios.length + 1,
-    nomeUsuario,
-    nome,
-    email,
-    senha,
-    foto: fotoSalva,
-    bio: bio || ""
-  };
+const novoUsuario = {
+  id: usuarios.length + 1,
+  nomeUsuario,
+  nome,
+  email,
+  senha,
+  foto: fotoSalva,
+  bio: bio || "",
+  favoritos: []
+};
 
   usuarios.push(novoUsuario);
   salvarUsuarios(usuarios);
 
   res.status(201).json({ message: "Usuário criado com sucesso" });
 });
+
+/* ========================================================= */
+/* ================= FAVORITAR MÚSICA ======================= */
+/* ========================================================= */
+
+router.post("/favoritos", (req, res) => {
+  const { userId, musicaId } = req.body;
+
+  const usuarios = lerUsuarios();
+  const usuario = usuarios.find(u => u.id === userId);
+
+  if (!usuario) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  if (!usuario.favoritos) {
+    usuario.favoritos = [];
+  }
+
+  if (usuario.favoritos.includes(musicaId)) {
+    usuario.favoritos = usuario.favoritos.filter(
+      id => id !== musicaId
+    );
+  } else {
+    usuario.favoritos.push(musicaId);
+  }
+
+  salvarUsuarios(usuarios);
+
+  res.json({
+    message: "Favoritos atualizado",
+    favoritos: usuario.favoritos
+  });
+});
+
 
 /* ========================================================= */
 /* ================= LOGIN ================================ */
