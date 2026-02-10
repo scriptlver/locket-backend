@@ -7,17 +7,9 @@ const router = express.Router();
 const usuariosPath = path.join(__dirname, "../data/usuarios.json");
 const uploadsPath = path.join(__dirname, "../uploads");
 
-/* ========================================================= */
-/* ================= CRIAR PASTAS SE NÃO EXISTIREM ========= */
-/* ========================================================= */
-
 if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath, { recursive: true });
 }
-
-/* ========================================================= */
-/* ================= SALVAR FOTO BASE64 ==================== */
-/* ========================================================= */
 
 function salvarFotoBase64(fotoBase64) {
   if (!fotoBase64) return null;
@@ -36,9 +28,7 @@ function salvarFotoBase64(fotoBase64) {
   return nomeArquivo;
 }
 
-/* ========================================================= */
-/* ================= LER USUÁRIOS ========================== */
-/* ========================================================= */
+/* ler usuários do arquivo JSON, ou criar um novo se não existir */
 
 function lerUsuarios() {
   try {
@@ -53,17 +43,13 @@ function lerUsuarios() {
   }
 }
 
-/* ========================================================= */
-/* ================= SALVAR USUÁRIOS ======================= */
-/* ========================================================= */
+/* salvar usuários */
 
 function salvarUsuarios(usuarios) {
   fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
 }
 
-/* ========================================================= */
-/* ================= REGISTRO ============================== */
-/* ========================================================= */
+/* registrar usuário */
 
 router.post("/register", (req, res) => {
   const { nomeUsuario, nome, email, senha, foto, bio, favoritos } = req.body;
@@ -83,6 +69,8 @@ router.post("/register", (req, res) => {
     });
   }
 
+  /* ler usuários */
+
   const usuarios = lerUsuarios();
 
   if (usuarios.find((u) => u.email === email)) {
@@ -95,16 +83,16 @@ router.post("/register", (req, res) => {
 
   const fotoSalva = salvarFotoBase64(foto);
 
-const novoUsuario = {
-  id: usuarios.length + 1,
-  nomeUsuario,
-  nome,
-  email,
-  senha,
-  foto: fotoSalva,
-  bio: bio || "",
-  favoritos: []
-};
+  const novoUsuario = {
+    id: usuarios.length + 1,
+    nomeUsuario,
+    nome,
+    email,
+    senha,
+    foto: fotoSalva,
+    bio: bio || "",
+    favoritos: [],
+  };
 
   usuarios.push(novoUsuario);
   salvarUsuarios(usuarios);
@@ -112,15 +100,12 @@ const novoUsuario = {
   res.status(201).json({ message: "Usuário criado com sucesso" });
 });
 
-/* ========================================================= */
-/* ================= FAVORITAR MÚSICA ======================= */
-/* ========================================================= */
-
+/* favoritar música */
 router.post("/favoritos", (req, res) => {
   const { userId, musicaId } = req.body;
 
   const usuarios = lerUsuarios();
-  const usuario = usuarios.find(u => u.id === userId);
+  const usuario = usuarios.find((u) => u.id === userId);
 
   if (!usuario) {
     return res.status(404).json({ error: "Usuário não encontrado" });
@@ -131,9 +116,7 @@ router.post("/favoritos", (req, res) => {
   }
 
   if (usuario.favoritos.includes(musicaId)) {
-    usuario.favoritos = usuario.favoritos.filter(
-      id => id !== musicaId
-    );
+    usuario.favoritos = usuario.favoritos.filter((id) => id !== musicaId);
   } else {
     usuario.favoritos.push(musicaId);
   }
@@ -142,14 +125,11 @@ router.post("/favoritos", (req, res) => {
 
   res.json({
     message: "Favoritos atualizado",
-    favoritos: usuario.favoritos
+    favoritos: usuario.favoritos,
   });
 });
 
-
-/* ========================================================= */
-/* ================= LOGIN ================================ */
-/* ========================================================= */
+/* login */
 
 router.post("/login", (req, res) => {
   const { email, senha } = req.body;
@@ -160,9 +140,7 @@ router.post("/login", (req, res) => {
 
   const usuarios = lerUsuarios();
 
-  const usuario = usuarios.find(
-    (u) => u.email === email && u.senha === senha
-  );
+  const usuario = usuarios.find((u) => u.email === email && u.senha === senha);
 
   if (!usuario) {
     return res.status(401).json({ error: "Email ou senha inválidos" });
@@ -177,22 +155,18 @@ router.post("/login", (req, res) => {
       email: usuario.email,
       senha: usuario.senha,
       foto: usuario.foto,
-      bio: usuario.bio || ""
+      bio: usuario.bio || "",
     },
   });
 });
 
-/* ========================================================= */
-/* ================= LISTAR USUÁRIOS ====================== */
-/* ========================================================= */
+/* listar usuários */
 
 router.get("/users", (req, res) => {
   res.json(lerUsuarios());
 });
 
-/* ========================================================= */
-/* ================= BUSCAR POR ID ======================== */
-/* ========================================================= */
+/* buscar usuário no back por id */
 
 router.get("/users/:id", (req, res) => {
   const usuarios = lerUsuarios();
@@ -205,9 +179,7 @@ router.get("/users/:id", (req, res) => {
   res.json(usuario);
 });
 
-/* ========================================================= */
-/* ================= EDITAR PERFIL ======================== */
-/* ========================================================= */
+/* editar perfil */
 
 router.put("/editar-perfil", (req, res) => {
   const { id, nomeUsuario, nome, email, senha, foto, bio } = req.body;
@@ -221,7 +193,7 @@ router.put("/editar-perfil", (req, res) => {
 
   if (nomeUsuario) {
     const existe = usuarios.find(
-      (u) => u.nomeUsuario === nomeUsuario && u.id !== id
+      (u) => u.nomeUsuario === nomeUsuario && u.id !== id,
     );
 
     if (existe) {
@@ -254,15 +226,11 @@ router.put("/editar-perfil", (req, res) => {
   });
 });
 
-/* ========================================================= */
-/* ================= DELETAR USUÁRIO ====================== */
-/* ========================================================= */
+/* deletar usuário */
 
 router.delete("/users/:id", (req, res) => {
   const usuarios = lerUsuarios();
-  const index = usuarios.findIndex(
-    (u) => u.id === Number(req.params.id)
-  );
+  const index = usuarios.findIndex((u) => u.id === Number(req.params.id));
 
   if (index === -1) {
     return res.status(404).json({ error: "Usuário não encontrado" });
@@ -270,7 +238,7 @@ router.delete("/users/:id", (req, res) => {
 
   const usuario = usuarios[index];
 
-  /* 🔥 APAGAR FOTO */
+  /* apagar foto */
   if (usuario.foto) {
     const caminhoFoto = path.join(uploadsPath, usuario.foto);
 
@@ -283,9 +251,8 @@ router.delete("/users/:id", (req, res) => {
   salvarUsuarios(usuarios);
 
   res.json({
-    message: "Usuário deletado com sucesso"
+    message: "Usuário deletado com sucesso",
   });
 });
-
 
 module.exports = router;

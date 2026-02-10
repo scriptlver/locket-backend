@@ -17,13 +17,10 @@ app.use("/uploads", express.static("uploads"));
 
 
 // rota teste
-app.get("/", (req, res) => {
-  res.send("Backend rodando 🚀");
-});
+//app.get("/", (req, res) => {
+  //res.send("Backend rodando!!");
+//});
 
-app.get("/teste", (req, res) => {
-  res.send("rota teste ok");
-});
 
 // iniciar servidor (sempre por último, e eu nn sabia hahahaha)
 app.listen(PORT, () => {
