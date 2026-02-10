@@ -156,6 +156,7 @@ router.post("/login", (req, res) => {
       senha: usuario.senha,
       foto: usuario.foto,
       bio: usuario.bio || "",
+      favoritos: usuario.favoritos || [],
     },
   });
 });
@@ -177,6 +178,30 @@ router.get("/users/:id", (req, res) => {
   }
 
   res.json(usuario);
+});
+
+/* buscar usuário no back por email */
+router.get("/users/email/:email", (req, res) => {
+  const usuarios = lerUsuarios();
+
+  const email = req.params.email.toLowerCase();
+
+  const usuario = usuarios.find((u) => u.email.toLowerCase() === email);
+
+  if (!usuario) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  res.json(usuario);
+});
+
+/* total de usuários cadastrados */
+router.get("/users-count", (req, res) => {
+  const usuarios = lerUsuarios();
+
+  res.json({
+    total: usuarios.length
+  });
 });
 
 /* editar perfil */

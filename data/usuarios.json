@@ -5,10 +5,28 @@
     "nome": "luan",
     "email": "madisonkanye@gmail.com",
     "senha": "123456",
-    "foto": "user_1770496938103.jpeg",
+    "foto": "user_1770752271732.jpeg",
     "bio": "OIII AMOR",
     "favoritos": [
       "locket-theme",
+      "angel-wings",
+      "bad-enough",
+      "healthy-habit",
+      "nothing-at-all",
+      "youre-still-everything"
+    ]
+  },
+  {
+    "id": 2,
+    "nomeUsuario": "lavisbeirk",
+    "nome": "lavi",
+    "email": "lavisbeirk@gmail.com",
+    "senha": "lavinia06",
+    "foto": "user_1770753717674.jpeg",
+    "bio": "guaguguaguagaugaugau",
+    "favoritos": [
+      "locket-theme",
+      "yes-baby",
       "angel-wings",
       "bad-enough",
       "healthy-habit",
