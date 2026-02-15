@@ -157,6 +157,8 @@ router.put("/editar-perfil", (req, res) => {
   res.json({ message: "Perfil atualizado" });
 });
 
+// deletar conta
+
 router.delete("/users/:id", (req, res) => {
   const usuarios = lerUsuarios();
   const id = Number(req.params.id);
