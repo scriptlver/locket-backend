@@ -157,4 +157,25 @@ router.put("/editar-perfil", (req, res) => {
   res.json({ message: "Perfil atualizado" });
 });
 
+router.delete("/users/:id", (req, res) => {
+  const usuarios = lerUsuarios();
+  const id = Number(req.params.id);
+
+  const index = usuarios.findIndex(u => u.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+
+  const usuarioRemovido = usuarios.splice(index, 1);
+
+  salvarUsuarios(usuarios);
+
+  res.json({
+    message: "Usuário removido com sucesso",
+    usuario: usuarioRemovido[0]
+  });
+});
+
+
 module.exports = router;
