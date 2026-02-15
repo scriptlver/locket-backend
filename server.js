@@ -3,26 +3,27 @@ const cors = require("cors");
 const path = require("path");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// middlewares
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://locket-frontend-xi.vercel.app"
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
-// rotas
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 const authRoutes = require("./routes/auth.routes");
 app.use("/api", authRoutes);
 
-app.use("/uploads", express.static("uploads"));
+app.get("/", (req, res) => {
+  res.send("Backend rodando!!!");
+});
 
-
-// rota teste
-//app.get("/", (req, res) => {
-  //res.send("Backend rodando!!");
-//});
-
-
-// iniciar servidor (sempre por último, e eu nn sabia hahahaha)
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
