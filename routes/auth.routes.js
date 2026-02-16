@@ -133,8 +133,6 @@ router.post("/favoritos", (req, res) => {
   res.json({ favoritos: usuario.favoritos });
 });
 
-// editar perfil
-
 router.put("/editar-perfil", (req, res) => {
   const { id, nomeUsuario, nome, email, senha, foto, bio } = req.body;
 
@@ -150,19 +148,14 @@ router.put("/editar-perfil", (req, res) => {
   if (email) usuarios[index].email = email;
   if (bio !== undefined) usuarios[index].bio = bio;
   if (senha && senha.length >= 6) usuarios[index].senha = senha;
-
   if (foto?.startsWith("data:image")) {
     usuarios[index].foto = salvarFotoBase64(foto);
   }
 
   salvarUsuarios(usuarios);
 
-  // 🔥 DEVOLVE O USUÁRIO ATUALIZADO
-  res.json({
-    usuario: usuarios[index],
-  });
+  res.json({ message: "Perfil atualizado" });
 });
-
 
 // deletar conta
 
