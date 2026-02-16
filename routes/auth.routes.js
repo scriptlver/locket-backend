@@ -43,6 +43,8 @@ function salvarUsuarios(usuarios) {
   fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
 }
 
+// registrar usuário
+
 router.post("/register", (req, res) => {
   const { nomeUsuario, nome, email, senha, foto, bio } = req.body;
 
@@ -79,6 +81,8 @@ router.post("/register", (req, res) => {
   res.status(201).json({ message: "Usuário criado com sucesso" });
 });
 
+// login
+
 router.post("/login", (req, res) => {
   const { email, senha } = req.body;
 
@@ -97,10 +101,13 @@ router.post("/login", (req, res) => {
   });
 });
 
+// obter lista de usuários 
+
 router.get("/users", (req, res) => {
   res.json(lerUsuarios());
 });
 
+// obter dados do usuário por id 
 router.get("/users/:id", (req, res) => {
   const usuarios = lerUsuarios();
   const usuario = usuarios.find(u => u.id === Number(req.params.id));
@@ -111,6 +118,8 @@ router.get("/users/:id", (req, res) => {
 
   res.json(usuario);
 });
+
+// adicionar/remover favoritos
 
 router.post("/favoritos", (req, res) => {
   const { userId, musicaId } = req.body;
@@ -133,6 +142,7 @@ router.post("/favoritos", (req, res) => {
   res.json({ favoritos: usuario.favoritos });
 });
 
+// editar perfil
 router.put("/editar-perfil", (req, res) => {
   const { id, nomeUsuario, nome, email, senha, foto, bio } = req.body;
 
