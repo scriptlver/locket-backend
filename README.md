@@ -94,7 +94,7 @@ todas as rotas começam com `/api`
 ### 🪽 buscar usuário por id
 **get**
 /api/users/:id
-# exemplo:
+- exemplo:
 ```json
 /api/users/4
 ```
@@ -161,7 +161,9 @@ cd locket-backend
 (se não usar git, apenas baixe o projeto e entre na pasta)
 
 ### 🔒 instalando dependências
+```json
 npm install
+```
 
 ### 🤍 estrutura necessária
 antes de rodar, garanta que essas pastas existam:
@@ -216,7 +218,7 @@ const API_URL =
  - faça push do projeto para o github
 - crie um web service no render
 - configure:
-```json
+```bash
 npm install
 node index.js
 ```
@@ -226,5 +228,6 @@ o render detecta a porta automaticamente via process.env.PORT
 - projeto educacional / portfólio
 - testes realizados com postman
 - integração total com o frontend
+- as senhas não são criptografadas. projeto educacional.
 
 🤍 projeto inspirado no álbum locket da madison beer 🪽🤍
