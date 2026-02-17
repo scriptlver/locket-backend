@@ -1,226 +1,72 @@
 # 🔒🪽 locket backend 🤍
 
 backend desenvolvido para o projeto **locket**, um site inspirado no álbum *locket* da madison beer 🤍.  
-esse backend é responsável por autenticação de usuários, gerenciamento de perfil, upload de fotos e persistência de dados.
+este servidor gerencia a persistência de dados e autenticação utilizando uma infraestrutura baseada em nuvem.
 
 ---
 
 ## 🪽 tecnologias utilizadas
 
-- node.js  
-- express  
-- cors  
-- fs (file system)  
-- path  
-- render  
-- postman  
+- **node.js & express**: servidor de api robusto e escalável.
+- **mongodb atlas**: banco de dados nosql para armazenamento persistente.
+- **mongoose**: modelagem de dados e interface de comunicação com o banco.
+- **cors**: controle de acesso para integração segura com o frontend.
+- **render**: hospedagem automatizada com deploy contínuo.
 
 ---
 
-## 🤍 hospedagem
+## 🤍 hospedagem e acesso
 
-backend hospedado no render:
-
-- dashboard:  
-  https://dashboard.render.com/web/srv-d68vjnogjchc73ceipt0  
-
-- base url:  
-  https://locket-backend-78sy.onrender.com  
+- **api base url**: `https://locket-backend-78sy.onrender.com`
+- **frontend url**: `https://locket-frontend-xi.vercel.app`
 
 ---
 
-## 🔒 configuração principal
+## 🔒 arquitetura de dados
 
-- servidor express rodando na porta 3000 (ou variável de ambiente)  
-- cors configurado para:
-  - http://localhost:5173  
-  - https://locket-frontend-xi.vercel.app  
-- upload de imagens salvo em /uploads  
-- dados persistidos em /data/usuarios.json  
+- **persistência**: os dados são armazenados no cluster mongodb atlas, garantindo que as informações não sejam perdidas após reinicializações do servidor.
+- **imagens**: as fotos de perfil são processadas em **base64** e armazenadas diretamente no banco de dados, eliminando a dependência de sistema de arquivos local (fs).
+- **identificação**: utilização de `_id` nativo do mongodb para garantir integridade e unicidade dos registros.
 
 ---
 
-## 🪽 funcionalidades
+## 🪽 funcionalidades principais
 
-- registrar usuário  
-- login  
-- listar usuários  
-- buscar usuário por id  
-- buscar usuário por email  
-- editar perfil  
-- deletar conta   
-- upload de foto de perfil  
+- ✅ **autenticação**: registro e login de usuários.
+- ✅ **perfil**: edição de informações pessoais, bio e foto.
+- ✅ **favoritos**: sistema de gerenciamento de músicas favoritas por usuário.
+- ✅ **segurança**: validação de campos obrigatórios e tratamento de erros globais.
 
 ---
 
-## 🤍 rotas da api
+## 🤍 estrutura do repositório
 
-todas as rotas começam com `/api`
-
----
-
-### 🪽 registrar usuário
-
-**post**  
-/api/register
-
-```json
-{
-  "nomeUsuario": "testeteste",
-  "nome": "teste",
-  "email": "teste@gmail.com",
-  "senha": "123456",
-  "foto": "data:image/png;base64,...",
-  "bio": "biooooooooo"
-}
-```
-
-### 🔒 login
-**post**
-/api/login
-
-```json
-{
-  "email": "testeteste@gmail.com",
-  "senha": "123456"
-}
-```
-
-### 🤍 listar usuários
-**get**
-/api/users
-
-### 🪽 buscar usuário por id
-**get**
-/api/users/:id
-- exemplo:
-```bash
-/api/users/4
-```
-
-### 🤍 buscar usuário por email
-**get**
-/api/users/email/:email
-- exemplo:
-```bash
-/api/users/email/testeteste@gmail.com
-```
-
-### 🪽 editar perfil
-**put**
-/api/editar-perfil
-
-```json
-{
-  "id": 2,
-  "nomeUsuario": "teste",
-  "nome": "testeteste",
-  "email": "teste@gmail.com",
-  "senha": "teste123",
-  "foto": "data:image/jpeg;base64,...",
-  "bio": "guaguguaguagaugaugau"
-}
-```
-
-### 🪽 deletar usuário
-**delete**
-/api/users/:id
-# exemplo:
-```bash
-/api/users/5
-```
-
-### 🤍 contar usuários
-**get**
-/api/users-count
-
-## 🪽 como rodar o backend localmente 🤍
-
-siga os passos abaixo para rodar o backend do locket na sua máquina 🔒🪽
-
----
-
-### 🤍 pré-requisitos
-
-- node.js (versão 18 ou superior)  
-- npm ou yarn  
-- git (opcional)  
-
-verifique se o node está instalado:
-```bash
-node -v
-npm -v
-```
-
-### 🪽 clonando o repositório
-```bash
-git clone https://github.com/scriptlver/locket-backend.git
-cd locket-backend
-```
-(se não usar git, apenas baixe o projeto e entre na pasta)
-
-### 🔒 instalando dependências
-```bash
-npm install
-```
-
-### 🤍 estrutura necessária
-antes de rodar, garanta que essas pastas existam:
-```bash
+```text
 locket-backend/
-├─ data/
-│  └─ usuarios.json
-├─ uploads/
+├─ models/
+│  └─ user.js          # definição do esquema de dados (schema)
 ├─ routes/
-│  └─ auth.routes.js
-├─ index.js
-└─ package.json
+│  └─ auth.routes.js   # endpoints da api e lógica de negócio
+├─ server.js           # ponto de entrada e conexão com o banco
+└─ package.json        # gerenciamento de dependências
 ```
-
-**obs: se o arquivo usuarios.json não existir, o backend cria automaticamente!**
-
-### 🪽 rodando o servidor
-```bash
-node index.js
-```
-**ou, se usar nodemon:**
-```bash
-npx nodemon index.js
-```
-
-### 🔒 porta do servidor
-por padrão, o backend roda em:
-```bash
-http://localhost:3000
-```
-### 🤍 testando se está funcionando
-acesse no navegador ou postman:
-```bash
-http://localhost:3000
-```
-
-### 🪽 conectando com o frontend
-
-no frontend, configure a variável de api:
-```bash
-const API_URL =
-  location.hostname === "localhost"
-    ? "http://localhost:3000"
-    : "https://locket-backend-78sy.onrender.com";
-```
-
-### 🤍 rodar em produção (render)
- - faça push do projeto para o github
-- crie um web service no render
-- configure:
+---
+## 🪽 como rodar localmente 🤍
+1. instalação:
 ```bash
 npm install
-node index.js
 ```
-o render detecta a porta automaticamente via process.env.PORT
-### 🪽 observações
-- dados armazenados em json
-- projeto educacional / portfólio
-- testes realizados com postman
-- integração total com o frontend
-- as senhas não são criptografadas. projeto educacional.
+2. conexão:
+verifique se a mongo_uri no arquivo server.js está configurada com suas credenciais do atlas.
+
+3. execução:
+```bash
+node server.js
+```
+---
+### 🪽 observações finais 🤍
+
+- este projeto possui caráter educativo e de portfólio.
+- as senhas são armazenadas em texto simples para fins de teste (não recomendado para produção).
+- integração total realizada com o frontend via vercel.
+- todos os testes de rotas foram validados via postman.
