@@ -52,14 +52,14 @@ locket-backend/
 ```
 ---
 ## 🪽 como rodar localmente 🤍
-###  1. instalação:
+**1.instalação**:
 ```bash
 npm install
 ```
-### 2. conexão:
+**2. conexão**:
 verifique se a mongo_uri no arquivo server.js está configurada com suas credenciais do atlas.
 
-### 3. execução:
+**3. execução**:
 ```bash
 node server.js
 ```
