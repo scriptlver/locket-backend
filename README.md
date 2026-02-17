@@ -1,4 +1,4 @@
-# 🔒🪽 locket backend — madison beer album 🤍
+# 🔒🪽 locket backend 🤍
 
 backend desenvolvido para o projeto **locket**, um site inspirado no álbum *locket* da madison beer 🤍.  
 esse backend é responsável por autenticação de usuários, gerenciamento de perfil, favoritos, upload de fotos e persistência de dados.
@@ -48,8 +48,7 @@ backend hospedado no render:
 - buscar usuário por id  
 - buscar usuário por email  
 - editar perfil  
-- deletar conta  
-- sistema de favoritos  
+- deletar conta   
 - upload de foto de perfil  
 
 ---
@@ -229,5 +228,3 @@ o render detecta a porta automaticamente via process.env.PORT
 - testes realizados com postman
 - integração total com o frontend
 - as senhas não são criptografadas. projeto educacional.
-
-🤍 projeto inspirado no álbum locket da madison beer 🪽🤍
