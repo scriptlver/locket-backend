@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User"); // Certifique-se de criar o User.js na pasta models
+const User = require("../models/User");
 
-// 1. REGISTRAR USUÁRIO
+// registrar usuário
 router.post("/register", async (req, res) => {
   try {
     const { nomeUsuario, nome, email, senha, foto, bio } = req.body;
@@ -13,19 +13,19 @@ router.post("/register", async (req, res) => {
 
     const existe = await User.findOne({ $or: [{ email }, { nomeUsuario }] });
     if (existe) {
-      return res.status(400).json({ error: "Email ou Nome de Usuário já cadastrado" });
+      return res
+        .status(400)
+        .json({ error: "Email ou Nome de Usuário já cadastrado" });
     }
 
-    // Nota: Como o Render apaga a pasta /uploads, salvamos a foto (Base64) 
-    // direto no MongoDB para ela não sumir nunca.
     const novoUsuario = new User({
       nomeUsuario,
       nome,
       email,
       senha,
-      foto: foto || "", 
+      foto: foto || "",
       bio: bio || "",
-      favoritos: []
+      favoritos: [],
     });
 
     await novoUsuario.save();
@@ -36,7 +36,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 2. LOGIN
+// login
 router.post("/login", async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -52,7 +52,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// 3. OBTER LISTA DE USUÁRIOS
+// obter lista de usuários
 router.get("/users", async (req, res) => {
   try {
     const usuarios = await User.find();
@@ -62,7 +62,7 @@ router.get("/users", async (req, res) => {
   }
 });
 
-// 4. OBTER DADOS DO USUÁRIO POR ID
+// obter dados de um usuário específico
 router.get("/users/:id", async (req, res) => {
   try {
     const usuario = await User.findById(req.params.id);
@@ -75,7 +75,7 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-// 5. ADICIONAR/REMOVER FAVORITOS
+// adicionar ou remover música dos favoritos
 router.post("/favoritos", async (req, res) => {
   try {
     const { userId, musicaId } = req.body;
@@ -86,7 +86,7 @@ router.post("/favoritos", async (req, res) => {
     }
 
     if (usuario.favoritos.includes(musicaId)) {
-      usuario.favoritos = usuario.favoritos.filter(id => id !== musicaId);
+      usuario.favoritos = usuario.favoritos.filter((id) => id !== musicaId);
     } else {
       usuario.favoritos.push(musicaId);
     }
@@ -98,7 +98,7 @@ router.post("/favoritos", async (req, res) => {
   }
 });
 
-// 6. EDITAR PERFIL
+// editar perfil
 router.put("/editar-perfil", async (req, res) => {
   try {
     const { id, nomeUsuario, nome, email, senha, foto, bio } = req.body;
@@ -112,9 +112,9 @@ router.put("/editar-perfil", async (req, res) => {
     if (foto) updateData.foto = foto;
 
     const usuarioAtualizado = await User.findByIdAndUpdate(
-      id, 
-      { $set: updateData }, 
-      { new: true } // Retorna o usuário já com as mudanças
+      id,
+      { $set: updateData },
+      { new: true }, // retorna o usuário já com as mudanças
     );
 
     if (!usuarioAtualizado) {
@@ -127,7 +127,7 @@ router.put("/editar-perfil", async (req, res) => {
   }
 });
 
-// 7. DELETAR CONTA
+// deletar conta
 router.delete("/users/:id", async (req, res) => {
   try {
     const usuarioRemovido = await User.findByIdAndDelete(req.params.id);
@@ -138,7 +138,7 @@ router.delete("/users/:id", async (req, res) => {
 
     res.json({
       message: "Usuário removido com sucesso",
-      usuario: usuarioRemovido
+      usuario: usuarioRemovido,
     });
   } catch (err) {
     res.status(500).json({ error: "Erro ao deletar conta" });
