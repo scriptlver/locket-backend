@@ -198,10 +198,6 @@ acesse no navegador ou postman:
 ```bash
 http://localhost:3000
 ```
-**resposta esperada:**
-```bash
-backend rodando!!!
-```
 
 ### 🪽 conectando com o frontend
 
