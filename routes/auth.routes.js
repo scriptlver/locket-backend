@@ -1,193 +1,148 @@
-const fs = require("fs");
-const path = require("path");
 const express = require("express");
-
 const router = express.Router();
+const User = require("../models/User"); // Certifique-se de criar o User.js na pasta models
 
-const usuariosPath = path.join(__dirname, "../data/usuarios.json");
-const uploadsPath = path.join(__dirname, "../uploads");
-
-if (!fs.existsSync(uploadsPath)) {
-  fs.mkdirSync(uploadsPath, { recursive: true });
-}
-
-function salvarFotoBase64(fotoBase64) {
-  if (!fotoBase64) return null;
-
-  const matches = fotoBase64.match(/^data:image\/(\w+);base64,/);
-  const extensao = matches ? matches[1] : "png";
-
-  const base64Data = fotoBase64.replace(/^data:image\/\w+;base64,/, "");
-  const buffer = Buffer.from(base64Data, "base64");
-
-  const nomeArquivo = `user_${Date.now()}.${extensao}`;
-  const caminho = path.join(uploadsPath, nomeArquivo);
-
-  fs.writeFileSync(caminho, buffer);
-
-  return nomeArquivo;
-}
-
-function lerUsuarios() {
+// 1. REGISTRAR USUÁRIO
+router.post("/register", async (req, res) => {
   try {
-    if (!fs.existsSync(usuariosPath)) {
-      fs.writeFileSync(usuariosPath, "[]", "utf-8");
+    const { nomeUsuario, nome, email, senha, foto, bio } = req.body;
+
+    if (!nomeUsuario || !nome || !email || !senha) {
+      return res.status(400).json({ error: "Preencha todos os campos" });
     }
-    return JSON.parse(fs.readFileSync(usuariosPath, "utf-8"));
-  } catch {
-    return [];
+
+    const existe = await User.findOne({ $or: [{ email }, { nomeUsuario }] });
+    if (existe) {
+      return res.status(400).json({ error: "Email ou Nome de Usuário já cadastrado" });
+    }
+
+    // Nota: Como o Render apaga a pasta /uploads, salvamos a foto (Base64) 
+    // direto no MongoDB para ela não sumir nunca.
+    const novoUsuario = new User({
+      nomeUsuario,
+      nome,
+      email,
+      senha,
+      foto: foto || "", 
+      bio: bio || "",
+      favoritos: []
+    });
+
+    await novoUsuario.save();
+    res.status(201).json({ message: "Usuário criado com sucesso" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao cadastrar usuário" });
   }
-}
-
-function salvarUsuarios(usuarios) {
-  fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
-}
-
-// registrar usuário
-
-router.post("/register", (req, res) => {
-  const { nomeUsuario, nome, email, senha, foto, bio } = req.body;
-
-  if (!nomeUsuario || !nome || !email || !senha) {
-    return res.status(400).json({ error: "Preencha todos os campos" });
-  }
-
-  const usuarios = lerUsuarios();
-
-  if (usuarios.find(u => u.email === email)) {
-    return res.status(400).json({ error: "Email já cadastrado" });
-  }
-
-  if (usuarios.find(u => u.nomeUsuario === nomeUsuario)) {
-    return res.status(400).json({ error: "Nome de usuário já existe" });
-  }
-
-  const fotoSalva = salvarFotoBase64(foto);
-
-  const novoUsuario = {
-    id: Date.now(),
-    nomeUsuario,
-    nome,
-    email,
-    senha,
-    foto: fotoSalva,
-    bio: bio || "",
-    favoritos: []
-  };
-
-  usuarios.push(novoUsuario);
-  salvarUsuarios(usuarios);
-
-  res.status(201).json({ message: "Usuário criado com sucesso" });
 });
 
-// login
+// 2. LOGIN
+router.post("/login", async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+    const usuario = await User.findOne({ email, senha });
 
-router.post("/login", (req, res) => {
-  const { email, senha } = req.body;
+    if (!usuario) {
+      return res.status(401).json({ error: "Email ou senha inválidos" });
+    }
 
-  const usuarios = lerUsuarios();
-  const usuario = usuarios.find(
-    u => u.email === email && u.senha === senha
-  );
-
-  if (!usuario) {
-    return res.status(401).json({ error: "Email ou senha inválidos" });
+    res.json({ message: "Login realizado com sucesso", usuario });
+  } catch (err) {
+    res.status(500).json({ error: "Erro no servidor" });
   }
-
-  res.json({
-    message: "Login realizado com sucesso",
-    usuario
-  });
 });
 
-// obter lista de usuários 
-
-router.get("/users", (req, res) => {
-  res.json(lerUsuarios());
+// 3. OBTER LISTA DE USUÁRIOS
+router.get("/users", async (req, res) => {
+  try {
+    const usuarios = await User.find();
+    res.json(usuarios);
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao buscar usuários" });
+  }
 });
 
-// obter dados do usuário por id 
-router.get("/users/:id", (req, res) => {
-  const usuarios = lerUsuarios();
-  const usuario = usuarios.find(u => u.id === Number(req.params.id));
-
-  if (!usuario) {
-    return res.status(404).json({ error: "Usuário não encontrado" });
+// 4. OBTER DADOS DO USUÁRIO POR ID
+router.get("/users/:id", async (req, res) => {
+  try {
+    const usuario = await User.findById(req.params.id);
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+    res.json(usuario);
+  } catch (err) {
+    res.status(500).json({ error: "ID inválido ou erro no servidor" });
   }
-
-  res.json(usuario);
 });
 
-// adicionar/remover favoritos
+// 5. ADICIONAR/REMOVER FAVORITOS
+router.post("/favoritos", async (req, res) => {
+  try {
+    const { userId, musicaId } = req.body;
+    const usuario = await User.findById(userId);
 
-router.post("/favoritos", (req, res) => {
-  const { userId, musicaId } = req.body;
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
 
-  const usuarios = lerUsuarios();
-  const usuario = usuarios.find(u => u.id === userId);
+    if (usuario.favoritos.includes(musicaId)) {
+      usuario.favoritos = usuario.favoritos.filter(id => id !== musicaId);
+    } else {
+      usuario.favoritos.push(musicaId);
+    }
 
-  if (!usuario) {
-    return res.status(404).json({ error: "Usuário não encontrado" });
+    await usuario.save();
+    res.json({ favoritos: usuario.favoritos });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao atualizar favoritos" });
   }
-
-  if (usuario.favoritos.includes(musicaId)) {
-    usuario.favoritos = usuario.favoritos.filter(id => id !== musicaId);
-  } else {
-    usuario.favoritos.push(musicaId);
-  }
-
-  salvarUsuarios(usuarios);
-
-  res.json({ favoritos: usuario.favoritos });
 });
 
-// editar perfil
-router.put("/editar-perfil", (req, res) => {
-  const { id, nomeUsuario, nome, email, senha, foto, bio } = req.body;
+// 6. EDITAR PERFIL
+router.put("/editar-perfil", async (req, res) => {
+  try {
+    const { id, nomeUsuario, nome, email, senha, foto, bio } = req.body;
 
-  const usuarios = lerUsuarios();
-  const index = usuarios.findIndex(u => u.id === id);
+    const updateData = {};
+    if (nomeUsuario) updateData.nomeUsuario = nomeUsuario;
+    if (nome) updateData.nome = nome;
+    if (email) updateData.email = email;
+    if (bio !== undefined) updateData.bio = bio;
+    if (senha && senha.length >= 6) updateData.senha = senha;
+    if (foto) updateData.foto = foto;
 
-  if (index === -1) {
-    return res.status(404).json({ error: "Usuário não encontrado" });
+    const usuarioAtualizado = await User.findByIdAndUpdate(
+      id, 
+      { $set: updateData }, 
+      { new: true } // Retorna o usuário já com as mudanças
+    );
+
+    if (!usuarioAtualizado) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+    res.json({ message: "Perfil atualizado", usuario: usuarioAtualizado });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao editar perfil" });
   }
-
-  if (nomeUsuario) usuarios[index].nomeUsuario = nomeUsuario;
-  if (nome) usuarios[index].nome = nome;
-  if (email) usuarios[index].email = email;
-  if (bio !== undefined) usuarios[index].bio = bio;
-  if (senha && senha.length >= 6) usuarios[index].senha = senha;
-  if (foto?.startsWith("data:image")) {
-    usuarios[index].foto = salvarFotoBase64(foto);
-  }
-
-  salvarUsuarios(usuarios);
-
-  res.json({ message: "Perfil atualizado" });
 });
 
-// deletar conta
+// 7. DELETAR CONTA
+router.delete("/users/:id", async (req, res) => {
+  try {
+    const usuarioRemovido = await User.findByIdAndDelete(req.params.id);
 
-router.delete("/users/:id", (req, res) => {
-  const usuarios = lerUsuarios();
-  const id = Number(req.params.id);
+    if (!usuarioRemovido) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
 
-  const index = usuarios.findIndex(u => u.id === id);
-
-  if (index === -1) {
-    return res.status(404).json({ error: "Usuário não encontrado" });
+    res.json({
+      message: "Usuário removido com sucesso",
+      usuario: usuarioRemovido
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao deletar conta" });
   }
-
-  const usuarioRemovido = usuarios.splice(index, 1);
-
-  salvarUsuarios(usuarios);
-
-  res.json({
-    message: "Usuário removido com sucesso",
-    usuario: usuarioRemovido[0]
-  });
 });
-
 
 module.exports = router;
