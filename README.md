@@ -95,7 +95,7 @@ todas as rotas começam com `/api`
 **get**
 /api/users/:id
 - exemplo:
-```json
+```bash
 /api/users/4
 ```
 
@@ -103,7 +103,7 @@ todas as rotas começam com `/api`
 **get**
 /api/users/email/:email
 - exemplo:
-```json
+```bash
 /api/users/email/testeteste@gmail.com
 ```
 
@@ -127,7 +127,7 @@ todas as rotas começam com `/api`
 **delete**
 /api/users/:id
 # exemplo:
-```json
+```bash
 /api/users/5
 ```
 
@@ -154,20 +154,20 @@ npm -v
 ```
 
 ### 🪽 clonando o repositório
-```json
+```bash
 git clone https://github.com/seu-usuario/locket-backend.git
 cd locket-backend
 ```
 (se não usar git, apenas baixe o projeto e entre na pasta)
 
 ### 🔒 instalando dependências
-```json
+```bash
 npm install
 ```
 
 ### 🤍 estrutura necessária
 antes de rodar, garanta que essas pastas existam:
-```json
+```bash
 locket-backend/
 ├─ data/
 │  └─ usuarios.json
@@ -181,33 +181,33 @@ locket-backend/
 **obs: se o arquivo usuarios.json não existir, o backend cria automaticamente!**
 
 ### 🪽 rodando o servidor
-```json
+```bash
 node index.js
 ```
 **ou, se usar nodemon:**
-```json
+```bash
 npx nodemon index.js
 ```
 
 ### 🔒 porta do servidor
 por padrão, o backend roda em:
-```json
+```bash
 http://localhost:3000
 ```
 ### 🤍 testando se está funcionando
 acesse no navegador ou postman:
-```json
+```bash
 http://localhost:3000
 ```
 **resposta esperada:**
-```json
+```bash
 backend rodando!!!
 ```
 
 ### 🪽 conectando com o frontend
 
 no frontend, configure a variável de api:
-```json
+```bash
 const API_URL =
   location.hostname === "localhost"
     ? "http://localhost:3000"
