@@ -6,8 +6,8 @@ const mongoose = require("mongoose");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const MONGO_URI = "mongodb+srv://laviribeiro_db_user:cjTR872uIevORUqb@cluster0.hje9fp6.mongodb.net/";
-
+// Substitui <password> ou SUA_SENHA pela senha que acabaste de definir
+const MONGO_URI = "mongodb+srv://laviribeiro_db_user:loDyQmZhQRRVmLx9@cluster0.hje9fp6.mongodb.net/locket?retryWrites=true&w=majority";
 mongoose.connect(MONGO_URI)
   .then(() => console.log("Conectado ao MongoDB!"))
   .catch(err => console.error("Erro ao conectar ao Mongo:", err));
