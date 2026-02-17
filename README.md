@@ -65,8 +65,6 @@ todas as rotas começam com `/api`
 **post**  
 /api/register
 
-
-body:
 ```json
 {
   "nomeUsuario": "lavisbeirk",
@@ -83,7 +81,6 @@ body:
 /api/login
 
 ```json
-body:
 {
   "email": "madisonkanye@gmail.com",
   "senha": "123456"
@@ -98,20 +95,23 @@ body:
 **get**
 /api/users/:id
 # exemplo:
+```json
 /api/users/4
+```
 
 ### 🤍 buscar usuário por email
 **get**
 /api/users/email/:email
-# exemplo:
-/api/users/email/madisonkanye@gmail.com
+- exemplo:
+```json
+/api/users/email/testeteste@gmail.com
+```
 
 ### 🪽 editar perfil
 **put**
 /api/editar-perfil
 
 ```json
-body:
 {
   "id": 2,
   "nomeUsuario": "teste",
@@ -127,7 +127,9 @@ body:
 **delete**
 /api/users/:id
 # exemplo:
+```json
 /api/users/5
+```
 
 ### 🤍 contar usuários
 **get**
@@ -161,10 +163,9 @@ cd locket-backend
 ### 🔒 instalando dependências
 npm install
 
-🤍 estrutura necessária
-
+### 🤍 estrutura necessária
 antes de rodar, garanta que essas pastas existam:
-
+```json
 locket-backend/
 ├─ data/
 │  └─ usuarios.json
@@ -173,64 +174,57 @@ locket-backend/
 │  └─ auth.routes.js
 ├─ index.js
 └─ package.json
+```
 
+**obs: se o arquivo usuarios.json não existir, o backend cria automaticamente!**
 
-obs: se o arquivo usuarios.json não existir, o backend cria automaticamente 🤍
-
-🪽 rodando o servidor
+### 🪽 rodando o servidor
+```json
 node index.js
-
-
-ou, se usar nodemon:
-
+```
+**ou, se usar nodemon:**
+```json
 npx nodemon index.js
+```
 
-🔒 porta do servidor
-
+### 🔒 porta do servidor
 por padrão, o backend roda em:
-
+```json
 http://localhost:3000
-
-🤍 testando se está funcionando
-
+```
+### 🤍 testando se está funcionando
 acesse no navegador ou postman:
-
+```json
 http://localhost:3000
-
-
-resposta esperada:
-
+```
+**resposta esperada:**
+```json
 backend rodando!!!
+```
 
-🪽 conectando com o frontend
+### 🪽 conectando com o frontend
 
 no frontend, configure a variável de api:
-
+```json
 const API_URL =
   location.hostname === "localhost"
     ? "http://localhost:3000"
     : "https://locket-backend-78sy.onrender.com";
+```
 
-🤍 rodar em produção (render)
-
-faça push do projeto para o github
-
-crie um web service no render
-
-configure:
-
-build command: npm install
-
-start command: node index.js
-
+### 🤍 rodar em produção (render)
+ - faça push do projeto para o github
+- crie um web service no render
+- configure:
+```json
+npm install
+node index.js
+```
 o render detecta a porta automaticamente via process.env.PORT
-
 ### 🪽 observações
 - dados armazenados em json
 - projeto educacional / portfólio
 - testes realizados com postman
 - integração total com o frontend
 
-🤍 feito por
-desenvolvido por lavinia ribeiro 🪽🤍
-projeto inspirado no álbum locket — madison beer 🔒🤍
+🤍 projeto inspirado no álbum locket da madison beer 🪽🤍
