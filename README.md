@@ -66,12 +66,12 @@ todas as rotas começam com `/api`
 
 ```json
 {
-  "nomeUsuario": "lavisbeirk",
-  "nome": "lavi",
-  "email": "madisonkanye@gmail.com",
+  "nomeUsuario": "testeteste",
+  "nome": "teste",
+  "email": "teste@gmail.com",
   "senha": "123456",
   "foto": "data:image/png;base64,...",
-  "bio": "i love madison beer 🤍"
+  "bio": "biooooooooo"
 }
 ```
 
@@ -81,7 +81,7 @@ todas as rotas começam com `/api`
 
 ```json
 {
-  "email": "madisonkanye@gmail.com",
+  "email": "testeteste@gmail.com",
   "senha": "123456"
 }
 ```
@@ -154,7 +154,7 @@ npm -v
 
 ### 🪽 clonando o repositório
 ```bash
-git clone https://github.com/seu-usuario/locket-backend.git
+git clone https://github.com/scriptlver/locket-backend.git
 cd locket-backend
 ```
 (se não usar git, apenas baixe o projeto e entre na pasta)
