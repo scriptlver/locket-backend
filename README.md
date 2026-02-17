@@ -1,7 +1,7 @@
 # 🔒🪽 locket backend 🤍
 
 backend desenvolvido para o projeto **locket**, um site inspirado no álbum *locket* da madison beer 🤍.  
-esse backend é responsável por autenticação de usuários, gerenciamento de perfil, favoritos, upload de fotos e persistência de dados.
+esse backend é responsável por autenticação de usuários, gerenciamento de perfil, upload de fotos e persistência de dados.
 
 ---
 
