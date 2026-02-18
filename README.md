@@ -7,12 +7,15 @@ este servidor gerencia a persistência de dados e autenticação utilizando uma 
 
 ## 🪽 tecnologias utilizadas
 
-- **node.js & express**: servidor de api robusto e escalável.
-- **mongodb atlas**: banco de dados nosql para armazenamento persistente.
-- **mongoose**: modelagem de dados e interface de comunicação com o banco.
-- **cors**: controle de acesso para integração segura com o frontend.
-- **render**: hospedagem automatizada com deploy contínuo.
-
+* **react**: base do projeto para alta performance e componentes dinâmicos.
+* **html**: estruturação semântica de todo o conteúdo.
+* **css**: estilização personalizada, moderna e utilitária.
+* **axios**: integração com o backend para consumo da api.
+* **mongodb atlas**: banco de dados em nuvem para persistência de dados.
+* **postman**: validação e testes rigorosos de todas as rotas da api.
+* **figma**: planejamento de ui/ux e prototipagem visual detalhada.
+* **vercel**: hospedagem oficial do frontend.
+* **render**: hospedagem oficial do backend.
 ---
 
 ## 🤍 hospedagem e acesso
