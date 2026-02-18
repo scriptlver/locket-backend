@@ -17,8 +17,9 @@ este servidor gerencia a persistência de dados e autenticação utilizando uma 
 
 ## 🤍 hospedagem e acesso
 
-- **api base url**: `https://locket-backend-78sy.onrender.com`
-- **frontend url**: `https://locket-frontend-xi.vercel.app`
+o projeto está disponível online através da vercel:
+* **link do site:** [https://locket-frontend-xi.vercel.app](https://locket-frontend-xi.vercel.app)
+* **status:** 🤍 online & integrado ao backend: [https://locket-backend-78sy.onrender.com](https://locket-backend-78sy.onrender.com)
 
 ---
 
