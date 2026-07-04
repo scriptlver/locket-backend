@@ -5,6 +5,16 @@ este servidor gerencia a persistência de dados e autenticação utilizando uma 
 
 ---
 
+## 🤍 hospedagem e acesso
+
+o projeto está disponível online através da vercel:
+
+* **link do site:** [https://locket-frontend-xi.vercel.app](https://locket-frontend-xi.vercel.app)
+* **status:** 🤍 online & integrado ao backend: [https://locket-backend-78sy.onrender.com](https://locket-backend-78sy.onrender.com)
+* **vídeo demo:** [assista no youtube](https://youtu.be/ys_g7n42BKc)
+
+---
+
 ## 🪽 tecnologias utilizadas
 
 * **react**: base do projeto para alta performance e componentes dinâmicos.
@@ -16,14 +26,6 @@ este servidor gerencia a persistência de dados e autenticação utilizando uma 
 * **figma**: planejamento de ui/ux e prototipagem visual detalhada.
 * **vercel**: hospedagem oficial do frontend.
 * **render**: hospedagem oficial do backend.
----
-
-## 🤍 hospedagem e acesso
-
-o projeto está disponível online através da vercel:
-* **link do site:** [https://locket-frontend-xi.vercel.app](https://locket-frontend-xi.vercel.app)
-* **status:** 🤍 online & integrado ao backend: [https://locket-backend-78sy.onrender.com](https://locket-backend-78sy.onrender.com)
-
 ---
 
 ## 🔒 arquitetura de dados
